@@ -1,0 +1,1194 @@
+#include<stdio.h>
+#include<time.h>
+#include<stdlib.h>
+#include<string.h>
+int jishu = 0, icount, number;//计数
+char IIdex[20], ID[20], nname[20], iidex[20], id[20], index[20];
+//用户信息链表
+struct user
+{ 
+	char name[20];
+	char password[20];
+	char num[20];
+	struct user*next;
+};
+//学生信息链表
+struct student
+{
+	char cname[20];//姓名
+	char sex[20];//性别
+	char inumber[20];//学号
+	int score;//分数
+	struct student *next;
+};
+//界面1
+preface()
+{
+	printf("                            *****************************************************\n");
+	printf("                                           欢迎来到学生信息管理系统\n");
+	printf("                    *********************************************************************\n");
+	printf("                    *                      1. 用户注册                                  *\n");
+	printf("                    *                      2. 用户登录                                  *\n");
+	printf("                    *                      3. 管理员登陆                                *\n");
+	printf("                    *                      4. 退出                                      *\n");
+	printf("                    *********************************************************************\n");
+}
+//**待解决问题**
+//界面1的选择 √
+//选择数字的非法输入 √
+//程序运行时读取文件 √
+//性别、账号输入的限制（正确时循环跳出） √
+//文件多次读入链表问题 √
+//密码*不能删除问题 √
+//模糊查询
+//修改学生信息中的bug √
+//退回到上一层 √
+choose(struct user*phead,struct user*pphead)
+{
+	char ch;
+	while (1)
+	{
+		preface();
+		char choice[1];	
+		scanf("%s", choice);
+		system("cls");
+		if (choice[0]=='1'|| choice[0] == '2'|| choice[0] == '3'|| choice[0] == '4')
+		{
+			switch (choice[0] - '0')
+			{
+			case 1:
+//				if (jishu == 0)
+				/*	pphead = CREAT();
+					user_f_read(pphead);*/
+		//		else
+					pphead = user_insert(pphead);
+				printf("录入成功！按Enter键继续！\n");
+				user_save_inf(pphead);
+				getchar();
+				getchar();
+				system("cls");
+				break;
+			case 2:											      //所有用户的登录（待完善管理员登陆与用户登陆的区别）
+				printf("					*****|请输入账号|*****");
+				printf("														");
+				user_Password(pphead);
+				getchar();
+				system("cls");
+				choose1(phead, pphead);
+				break;
+			case 3:												//管理员登陆
+				password();										//密码登陆
+				getchar();
+				system("cls");
+				choose14(phead, pphead);
+				break;
+			case 4:
+				printf("你已选择退出程序\n");
+				exit(0);
+				break;
+			}
+		}
+		else
+		{
+			printf("请输入正确的序号:\n");
+		}
+	}
+}
+//用户登录界面
+preface1()
+{
+	printf("                            *****************************************************\n");
+	printf("                                           欢迎来到用户查询界面\n");
+	printf("                    *********************************************************************\n");
+	printf("                    *                      1. 基本信息查询                              *\n");
+	printf("                    *                      2. 查看排名                                  *\n");
+	printf("                    *                      3. 返回上层界面                              *\n");
+	printf("                    *                      0. 退出                                      *\n");
+	printf("                    *********************************************************************\n");
+}
+//用户界面选择
+choose1(struct user*phead,struct user*pphead)
+{
+	char ch;
+	while (1)
+	{
+		preface1();
+		int choice;												//界面的选择
+		scanf("%d", &choice);
+		system("cls");
+		switch (choice)
+		{
+		case 1:									//基本信息查询
+			//f_read(phead);
+			printf("请输入要查询的学号:");
+			scanf("%s", id);
+			look(phead,id);
+			getchar();
+			getchar();
+			system("cls");
+			break;
+		case 2:	
+			preface11();
+			choose11(phead,pphead);
+			getchar();
+			system("cls");
+			break;
+		case 0:
+			printf("你已选择退出程序");
+			exit(0);
+			break;
+		case 3:										//返回到上一界面
+			system("cls");
+			return;
+			break;
+		}
+	}
+}
+//查看排名界面
+preface11()
+{
+	printf("                    *********************************************************************\n");
+	printf("                    *                      1. 成绩排名                                  *\n");
+	printf("                    *                      2. 姓名排名                                  *\n");
+	printf("                    *                      3. 学号排名                                  *\n");
+	printf("                    *                      4. 返回上层界面                              *\n");
+	printf("                    *                      0. 退出                                      *\n");
+	printf("                    *********************************************************************\n");
+}
+//查看排名界面选择
+choose11(struct user*phead,struct user*pphead)
+{
+	char ch;
+	while (1)
+	{
+		//f_read(phead);
+		int choice;												//界面的选择
+		scanf("%d", &choice);
+		system("cls");
+		switch (choice)
+		{
+		case 1:
+			phead = sort(phead);						   	  //根据成绩高低排序
+			print(phead);									  //输出
+			printf("按Enter键继续！");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 2:											  //根据姓名排名
+			phead = sort_name(phead);
+			print(phead);
+			printf("按Enter键继续！");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 3:
+			phead = sort_num(phead);                           //按照学号进行排序
+			print(phead);									   //输出
+			printf("按Enter键继续！");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 0:													//退出程序
+			printf("你已选择退出程序");
+			exit(0);
+			break;
+		case 4:
+			system("cls");
+			return;
+			break;
+		}
+		preface11();
+	}
+}
+//管理员登陆界面
+preface14()
+{
+	printf("                            *****************************************************\n");
+	printf("                                           欢迎来到管理员界面\n");
+	printf("                    *********************************************************************\n");
+	printf("                    *                      1. 管理学生信息                              *\n");
+	printf("                    *                      2. 管理用户信息                              *\n");
+	printf("                    *                      3. 返回上层界面                              *\n");
+	printf("                    *                      0. 退出                                      *\n");
+	printf("                    *********************************************************************\n");
+}
+//管理员界面的选择
+choose14(struct user*phead,struct user*pphead)
+{
+	char ch;
+	while (1)
+	{
+		preface14();
+		//user_f_read(pphead);
+		int choice;												//界面的选择
+		scanf("%d", &choice);
+		system("cls");
+		switch (choice)
+		{
+		case 1:													//管理学生信息
+			choose_1(phead,pphead);
+			break;
+		case 2:													 //管理用户信息
+			CHOOSE(phead,pphead);
+			printf("按Enter键继续！");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 0:													//退出程序
+			printf("你已选择退出程序");
+			exit(0);
+			break;
+		case 3:
+			system("cls");
+			return;
+			break;
+		}
+	}
+}
+//管理学生信息界面
+interface()
+{
+	printf("                                              \n");
+	printf("                                              \n");
+	printf("                                                *\n");
+	printf("                                           *          *\n");
+	printf("                                      *                    *\n");
+	printf("                                 *     欢迎来到学生管理系统     *\n");
+	printf("                            *         *                    *         *\n");
+	printf("                       *                   *          *                   *\n");
+	printf("                        *                       *                       *\n");
+	printf("                          *                     *                     *\n");
+	printf("                            *                   *                   *\n");
+	printf("                             *              *   *   *              *\n");
+	printf("                          ** *  * * * * * *           * * * * * *  * **\n");
+	printf("                        *                                               *\n");
+	printf("                          ** * * * * * * * * * * * * * * * * * * * * **\n");
+	printf("            *     *     *      *      *                   *      *      *     *     *                              \n");
+	printf("            *                                *     *                                *      \n");
+	printf("                                               * *                                  \n");
+	printf("             *    ①.录入学生信息              * *     ⑥.显示学生信息             *    \n");
+	printf("                                               * *                                     \n");
+	printf("             *    ②.查询学生信息              * *     ⑦.按学号顺序显示学生信息   *    \n");
+	printf("                                               * *                                      \n");
+	printf("             *    ③.删除学生信息              * *     ⑧.按成绩高低显示学生信息   *       \n");
+	printf("                                               * *                                     \n");
+	printf("             *    ④.修改学生信息              * *     ⑨.按姓名排序显示学生信息   *     \n");
+	printf("                                               * *                                        \n");
+	printf("            *     ⑤.统计学生人数              * *     ⑩.返回上层界面              *    \n");
+	printf("                                  *            * *            *                         \n");
+	printf("            *           *                    * * * *                    *           *   \n");
+	printf("            *   *                                                               *   *\n");
+	printf("                      ******************|（0）.退出程序|******************\n");
+	printf("\n");
+	printf("\n");
+	printf("                           ★★★★★请按照需求输入相应的序号★★★★★\n");
+	return 0;
+}
+//管理学生信息界面2
+interface_1()
+{
+	printf("                                              \n");
+	printf("                           ★★★★★请按照需求输入相应的序号★★★★★\n");
+	printf("                                              \n");
+	printf("            *     *     *      *      *                   *      *      *     *     *       \n");
+	printf("            *                                *     *                                *      \n");
+	printf("                                               * *                                  \n");
+	printf("             *    ①.录入学生信息              * *     ⑥.显示全部学生信息         *    \n");
+	printf("                                               * *                                     \n");
+	printf("             *    ②.查询学生信息              * *     ⑦.按学号顺序显示学生信息   *    \n");
+	printf("                                               * *                                      \n");
+	printf("             *    ③.删除学生信息              * *     ⑧.按成绩高低显示学生信息   *       \n");
+	printf("                                               * *                                     \n");
+	printf("             *    ④.修改学生信息              * *     ⑨.按姓名排序显示学生信息   *     \n");
+	printf("                                               * *                                        \n");
+	printf("            *     ⑤.统计学生人数              * *     ⑩.返回上层界面              *    \n");
+	printf("            *           *                    * * * *                    *           *   \n");
+	printf("            *   *                                                               *   *\n");
+	printf("                      ******************|（0）.退出程序|******************\n");
+	printf("\n");
+	printf("\n");
+	printf("\n");
+	return 0;
+}
+//学生信息界面选择
+choose_1(struct student *phead, struct student *pphead)
+{
+	char ch;
+	while (1)
+	{
+interface();
+		int choice;												//界面的选择
+		scanf("%d", &choice);
+		system("cls");
+		switch (choice)
+		{
+		case 1:
+			_insert(phead);			    				//添加
+			printf("录入成功！按Enter键继续！\n");
+			print(phead);
+			printf("按Enter键继续！\n");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 2:
+			printf("请输入要查询的学号：\n");
+			scanf("%s", id);                                   //要查询的学生学号
+			look(phead, id);
+			printf("按Enter键继续！");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 3:
+			print(phead);
+			printf("请输入要删除学生的学号：\n");
+			scanf("%s", index);								//删除位置的学号
+			delete(phead, index);								//删
+			getchar();
+			system("cls");
+			other();
+			break;
+	/*	case 4:
+			print(phead);
+			printf("请输入要添加位置的学号：\n");
+			scanf("%d", &number);						    	//插入位置的学号
+			phead = _insert(phead, number);				    	//增
+			printf("添加成功！按Enter键继续！");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;*/
+		case 4:
+			print(phead);
+			printf("请输入要更改位置的学号：\n");
+			scanf("%s", id);
+			change(phead, id);							    	//更改
+			printf("更改成功！按Enter键继续！");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 6:
+			print(phead);									    //输出
+			printf("按Enter键继续！");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 7:
+			phead = sort_num(phead);                           //按照学号进行排序
+			print(phead);									   //输出
+			printf("按Enter键继续！");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 8:
+			phead = sort(phead);						   	  //根据成绩高低排序
+			print(phead);									  //输出
+			printf("按Enter键继续！");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 9:
+			phead = sort_name(phead);
+			print(phead);
+			printf("按Enter键继续！");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 5:
+			others();										  //输出学生的个数
+			printf("按Enter键继续！\n");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 0:
+			printf("你已选择退出程序");
+			exit(0);
+			break;
+		case 10:
+			system("cls");
+			return;
+			break;
+		}
+		save_inf(phead);
+		interface_1();
+	}
+}
+//管理用户界面
+preface142()
+{
+	printf("                    *********************************************************************\n");
+	printf("                    *                      1. 用户信息的添加                              *\n");
+	printf("                    *                      2. 用户信息的删除                              *\n");
+	printf("                    *                      3. 用户信息的显示                              *\n");
+	printf("                    *                      4. 用户信息的保存                              *\n");
+	printf("                    *                      5. 返回上层界面                                *\n");
+	printf("                    *                      0. 退出                                        *\n");
+	printf("                    *********************************************************************\n");
+}
+//管理用户界面选择
+CHOOSE(struct student *phead,struct student *pphead)
+{
+	char ch;
+	while (1)
+	{
+		//user_f_read(pphead);
+		preface142();
+		int choice;												//界面的选择
+		scanf("%d", &choice);
+		system("cls");
+		switch (choice)
+		{
+		case 1:
+			user_insert(pphead);					    	//用户信息的添加
+			printf("录入成功！按Enter键继续！\n");
+			//user_f_read(pphead);
+			PRINT(pphead);
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 2:
+			PRINT(pphead);
+			printf("请输入要删除用户的账号（学号）：\n");
+			scanf("%s", iidex);								//用户信息的删除
+			user_delete(pphead, iidex);							
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 3:
+			PRINT(pphead);								    //用户信息的显示
+			printf("按Enter键继续！");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 4:
+			user_save_inf(pphead);								 //用户信息的保存
+			printf("按Enter键继续！\n");
+			getchar();
+			getchar();
+			system("cls");
+			other();
+			break;
+		case 0:
+			printf("你已选择退出程序");							//退出程序
+			exit(0);
+			break;
+		case 5:
+			system("cls");
+			return;
+			break;
+		}
+		user_save_inf(pphead);
+	}
+}
+//用户的登陆信息匹配
+user_Password(struct user*pphead)
+{
+	struct user *p;
+	p = pphead->next;
+	char passww[20];//用户输入的账号
+	scanf("%s", passww);
+	char n[20] = "0";//用户输入的密码
+	char c;//用户输入的密码单个字符判断
+	int i;
+	for (i = 0; i < 3; i++)
+	{
+		int j = 0;
+		printf("\n");
+		printf("					*****|请输入密码|*****");
+		printf("														");
+		while ((c = getch()) != '\r')
+		{
+			n[j] = c;
+			printf("*");
+			j++;
+			if (c == '\b')
+			{
+				printf("\b");
+				printf(" ");
+				printf("\b\b");
+				printf(" ");
+				printf("\b");
+				j = j - 2;
+			}
+		}
+		printf("\n");
+		while (p != NULL)
+		{
+			if (0 == strcmp(p->password, n) && strcmp(p->num, passww) == 0)
+			{
+				printf("					*****|登陆★成功|*****\n");
+				printf("\n");
+				printf("				    ******| 按下 Enter 进入 |*****\n");
+				getchar();
+				return passww;
+			}
+			else
+			{
+				if (p != NULL)
+				{
+					p = p->next;
+				}
+			}
+		}
+		if (i == 2)
+		{
+			printf("		  ★★★★★★|您已连续输入三次错误的密码，将被强制退出|★★★★★★\n");
+			exit(1);
+		}
+		else
+		{
+			printf("		                  -----|账户或密码密码错误！|-----\n");
+			p = pphead->next;
+		}
+	}
+}
+//用户信息的输入
+CREAT()
+{
+	struct user*end, *pnew;
+	struct user *pphead = (struct user*)malloc(sizeof(struct user));
+	pphead->next = NULL;
+	end = pphead;
+	/*pnew = (struct user*)malloc(sizeof(struct user));
+	printf("学号(账号):");
+	scanf("%s", pnew->num);
+	if (strlen(pnew->num) != 8)
+	{
+		printf("账号不符合约定账号！\n");
+		printf("学号(账号):");
+		scanf("%s", pnew->num);
+	}
+	printf("用户名:");
+	scanf("%s", pnew->name);
+	printf("密码:");
+	scanf("%s", pnew->password);
+	jishu++;
+	pnew->next = NULL;
+	end->next = pnew;
+	end = pnew;*/
+	return pphead;
+}
+//用户信息的遍历
+PRINT(struct user *pphead)
+{
+	struct user *ptemp;
+	int number = 1;												//表示结点中链表的序号
+	printf("*******本名单学生中有%d个用户*******\n\n", jishu);
+	ptemp = pphead->next;
+	while (ptemp)
+	{
+		printf("**第%d位用户**\n\n", number);
+		printf("学号（账号）：%s\t用户名：%s\t密码：%s\t\n\n", ptemp->num,ptemp->name, ptemp->password);
+		ptemp = ptemp->next;
+		number++;
+	}
+	return pphead;
+}
+//用户信息的添加
+user_insert(struct user *pphead)
+{
+	struct user *pnew, *s;
+	s= pphead;
+	pnew = (struct user*)malloc(sizeof(struct user));
+	printf("学号（账号）:");
+	scanf("%s", pnew->num);
+	//user_look(pphead, pnew->num);
+	while (strlen(pnew->num) != 8)
+	{
+		printf("账号不符合约定账号！\n");
+		printf("学号(账号):");
+		scanf("%s", pnew->num);
+	}
+	printf("用户名:");
+	scanf("%s", pnew->name);
+	printf("密码:");
+	scanf("%s", pnew->password);
+	pnew->next = s->next;
+	s->next = pnew;
+	jishu++;
+	return pphead;
+}
+//用户信息的删除
+user_delete(struct user *pphead, char iindex[20])
+{
+	struct user *ppre,*ppt;
+	ppt =ppre= (struct user*)malloc(sizeof(struct user));
+	ppt = pphead;
+	ppre = ppt;
+	while (strcmp(ppt->num, iindex)!=0)
+	{
+		ppre = ppt;
+		ppt = ppt->next;
+	}
+	ppre->next = ppt->next;
+	free(ppt);
+	jishu--;
+	printf("删除成功！按Enter继续！\n");
+	getchar();
+	return pphead;
+}
+//用户信息的保存
+user_save_inf(struct user*pphead)
+{
+	struct user*temp;
+	FILE*fp;
+	fp = fopen("用户信息.txt", "wt");
+	if (fp == NULL)
+	{
+		printf("写文件出错！按任意键退出！\n");
+		getchar();
+		exit(1);
+	}
+	temp = pphead->next;
+	while (temp)
+	{
+		fprintf(fp,"学号（账号）：%s\t用户名：%s\t密码：%s\t\n", temp->num, temp->name, temp->password);
+		temp = temp->next;
+	}
+	fclose(fp);
+	printf("\n用户信息保存成功  如有需求请在“C:\Users\woshi\Documents\Visual Studio 2015\Projects\ConsoleApplication3\ConsoleApplication3”中查看\n");
+}
+//用户信息的读取
+user_f_read(struct user*pphead)
+{
+	struct user*p, *pnew, *end;
+	pnew = (struct user*)malloc(sizeof(struct user));
+	p = pphead;
+	FILE*fp;
+	fp = fopen("用户信息.txt", "rt");
+	if (fp == NULL)
+	{
+		printf("读文件出错！\n");
+		getchar();
+		exit(1);
+	}
+	else
+		while (!feof(fp))//feof 到文件尾
+		{
+			while (p->next != NULL)
+			{
+				p = p->next;
+			}
+			if (p->next == NULL)
+			{
+				pnew = (struct user*)malloc(sizeof(struct user));
+				pnew->next = NULL;
+				p->next = pnew;
+				fscanf(fp, "学号（账号）：%s\t用户名：%s\t密码：%s\t\n", &pnew->num, &pnew->name, &pnew->password);
+				end = pnew;
+			}
+			else
+			{
+				pnew = (struct user*)malloc(sizeof(struct user));
+				pnew->next = NULL;
+				p->next = pnew;
+				fscanf(fp, "学号（帐号）：%s\t用户名：%s\t密码：%s\t\n", &pnew->num, &pnew->name, &pnew->password);
+				end = pnew;
+			}
+			jishu++;
+		}
+}
+//学生信息链表得建立
+student_creat()
+{
+	struct student*end, *pnew;
+	struct student *phead = (struct student*)malloc(sizeof(struct student));
+	icount = 0;
+	phead->next = NULL;
+	end = phead;
+	/*f_read(phead);
+	int n, i;
+	printf("请输入要录入的学生数：\n");
+	scanf("%d", &n);
+	if (n == 0)
+		return phead;
+	else
+		for (i = 0; i<n; i++)
+		{
+			pnew = (struct student*)malloc(sizeof(struct student));
+			printf("姓名:");
+			scanf("%s", pnew->cname);
+			printf("性别:");
+			scanf("%s", pnew->sex);
+			if (pnew->sex != "男" || pnew->sex != "女")
+			{
+				printf("请输入正确的性别:");
+				printf("性别:");
+				scanf("%s", pnew->sex);
+			}
+			printf("学号:");
+			scanf("%d", &pnew->inumber);
+			if (strlen(pnew->inumber) != 8)
+			{
+				printf("学号不符合约定学号！\n");
+				printf("学号(账号):");
+				scanf("%d", pnew->inumber);
+			}
+			printf("成绩:");
+			scanf("%d", &pnew->score);
+			icount++;
+			pnew->next = NULL;
+			end->next = pnew;
+			end = pnew;
+		}*/
+	return phead;
+}
+//学生信息的遍历
+print(struct student *phead)
+{
+	struct student *ptemp;
+	int number = 1;												//表示结点中链表的序号
+	printf("*******本名单学生中有%d名学生*******\n\n", icount);
+	ptemp = phead->next;
+	while (ptemp)
+	{
+		printf("**第%d名学生**\n\n", number);
+		printf("姓名：%s\t性别：%s\t学号：%s\t成绩：%d\n\n", ptemp->cname, ptemp->sex, ptemp->inumber, ptemp->score);
+		ptemp = ptemp->next;
+		number++;
+	}
+	return phead;
+}
+//学生信息的添加
+_insert(struct student *phead)
+{
+	struct student *pnew, *s = phead->next;
+	int n, i;
+	printf("请输入要录入的学生数：\n");
+	scanf("%d", &n);
+	if (n == 0)
+		return phead;
+	else
+		for (i = 0; i<n; i++)
+		{
+			pnew = (struct student*)malloc(sizeof(struct student));
+			printf("第%d位的学生的信息:\n", i + 1);
+			printf("姓名:");
+			scanf("%s", pnew->cname);
+			printf("性别:");
+			scanf("%s", pnew->sex);
+			while (strcmp(pnew->sex, "男") != 0 && strcmp(pnew->sex, "女") != 0)
+			{
+				printf("请输入正确的性别:");
+				printf("性别:");
+				scanf("%s", pnew->sex);
+			}
+			printf("学号:");
+			scanf("%s", pnew->inumber);
+			while (strlen(pnew->inumber) != 8)
+			{
+				printf("学号不符合约定学号！\n");
+				printf("学号(账号):");
+				scanf("%d", pnew->inumber);
+			}
+			printf("成绩:");
+			scanf("%d", &pnew->score);
+			icount++;
+			pnew->next = s->next;
+			s->next = pnew;
+			icount++;
+		}
+	/*while (s&&s->inumber != number)
+		s = s->next;*/
+	/*pnew = (struct student*)malloc(sizeof(struct student));
+	printf("姓名:");
+	scanf("%s", pnew->cname);
+	printf("性别:");
+	scanf("%s", pnew->sex);
+	while (strcmp(pnew->sex,"男")!=0&& strcmp(pnew->sex, "女") != 0)
+	{
+		printf("请输入正确的性别!\n");
+		printf("性别:");
+		scanf("%s", pnew->sex);
+	}
+	printf("学号:");
+	scanf("%s", pnew->inumber);
+	while (strlen(pnew->inumber) != 8)
+	{
+		printf("学号不符合约定学号！\n");
+		printf("学号(账号):");
+		scanf("%s", pnew->inumber);
+	}
+	printf("成绩:");
+	scanf("%d", &pnew->score);
+	pnew->next = s->next;
+	s->next = pnew;
+	icount++;*/
+	return phead;
+}
+//学生信息的删除
+delete(struct student *phead, char index[20])
+{
+	struct student *ppre, *pTemp;
+	pTemp = (struct student*)malloc(sizeof(struct student));
+	pTemp = phead;
+	ppre = pTemp;
+	while (strcmp(pTemp->inumber, index)!=0)
+	{
+		ppre = pTemp;
+		pTemp = pTemp->next;
+	}
+	if (pTemp == NULL)
+	{
+		printf("没有该学生的信息！");
+		return;
+	}
+	ppre->next = pTemp->next;
+	free(pTemp);
+	icount--;
+	printf("删除成功！按Enter继续！\n");
+	getchar();
+}
+//学生信息的查询
+look(struct student*phead, char id[20])
+{
+	struct student *ptemp;
+	ptemp = phead->next;
+	while (ptemp&&strcmp(ptemp->inumber, id)!=0)
+	{
+		ptemp = ptemp->next;
+	}
+	if (ptemp == NULL)
+	{
+		printf("没有该学生的信息！");
+		return;
+	}
+	printf("姓名：%s\t性别：%s\t学号：%s\t成绩：%d\n\n", ptemp->cname, ptemp->sex, ptemp->inumber, ptemp->score);
+	return ptemp;
+}
+//学生信息的更改
+change(struct student*phead, char id[20])
+{
+	printf("该学生的各项信息如下：\n");
+	struct student*p = look(phead, id);
+	if (p)
+	{
+		printf("****修改学生信息****\n");
+		printf("姓名:");
+		scanf("%s", p->cname);
+		printf("性别:");
+		scanf("%s", p->sex);
+		if (strcmp(p->sex, "男") != 0 && strcmp(p->sex, "女") != 0)
+		{
+			printf("请输入正确的性别:");
+			printf("性别:");
+			scanf("%s", p->sex);
+		}
+		printf("学号:");
+		scanf("%s", p->inumber);
+		if (strlen(p->inumber) != 8)
+		{
+			printf("学号不符合约定学号！\n");
+			printf("学号(账号):");
+			scanf("%s", p->inumber);
+		}
+		printf("成绩:");
+		scanf("%d", &p->score);
+	}
+	else
+	{
+		printf("未查询到该学生的信息！\n");
+	}
+}
+//学生信息的保存
+save_inf(struct student*phead)
+{
+	struct student*temp;
+	FILE*fp;
+	fp = fopen("学生管理信息.txt", "wt");
+	if (fp == NULL)
+	{
+		printf("写文件出错！按任意键退出！\n");
+		getchar();
+		exit(1);
+	}
+	temp = phead->next;
+	while (temp)
+	{
+		fprintf(fp, "姓名：%s\t性别：%s\t学号：%s\t高数成绩：%d\n", temp->cname, temp->sex, temp->inumber, temp->score);
+		temp = temp->next;
+	}
+	fclose(fp);
+}
+//学生信息的读取
+f_read(struct student*phead)
+{
+	struct student*p, *pnew, *end;
+	pnew = (struct student*)malloc(sizeof(struct student));
+	p = phead;
+	FILE*fp;
+	fp = fopen("学生管理信息.txt", "rt");
+	if (fp == NULL)
+	{
+		printf("读文件出错！\n");
+		getchar();
+		exit(1);
+	}
+	else
+		while (!feof(fp))
+		{
+			while (p->next != NULL)
+			{
+				p = p->next;
+			}
+			if (p->next == NULL)
+			{
+				pnew = (struct student*)malloc(sizeof(struct student));
+				pnew->next = NULL;
+				p->next = pnew;
+				fscanf(fp, "姓名：%s\t性别：%s\t学号：%s\t高数成绩：%d\n", &pnew->cname, &pnew->sex, &pnew->inumber, &pnew->score);
+				end = pnew;
+			}
+			else
+			{
+				pnew = (struct student*)malloc(sizeof(struct student));
+				pnew->next = NULL;
+				p->next = pnew;
+				fscanf(fp, "姓名：%s\t性别：%s\t学号：%s\t高数成绩：%d\n", &pnew->cname, &pnew->sex, &pnew->inumber, &pnew->score);
+				end = pnew;
+			}
+			icount++;
+		}
+
+}
+//按照学号排序
+swap(struct student *front)
+{
+	struct student *temp = front->next;
+	front->next = temp->next;
+	temp->next = front->next->next;
+	front->next->next = temp;
+}
+sort_num(struct student*head)
+{
+	if (head == NULL) {
+		printf("数据为空，不支持排序\n");
+		return;
+	}
+	struct student *p = head;
+	struct student *nowFrontP = head;							//当前front结点 ,表示当前待比较的两个结点之前结点，之所以保存这个，是为了比较方便 
+	struct student *endP = NULL;								//已排好序部分的开始结点 
+	while (nowFrontP->next->next != endP)                       //如果当前结点的下一个结点是 已排序部分，就退出循环，排序完成 
+	{
+		struct student *p1 = nowFrontP;							//每一趟都是从头开始 
+		while (p1->next->next != endP)                          //每一趟的排序都是 
+		{
+			if (p1->next->inumber > p1->next->next->inumber)
+			{
+				swap(p1);
+			}
+			p1 = p1->next;
+		}
+		endP = p1->next;
+	}
+}
+//按照分数排序
+sort(struct student*head)
+{
+	if (head == NULL) {
+		printf("数据为空，不支持排序\n");
+		return;
+	}
+	struct student *p = head;
+	struct student *nowFrontP = head;						//当前front结点 ,表示当前待比较的两个结点之前结点，之所以保存这个，是为了比较方便 
+	struct student *endP = NULL;							//已排好序部分的开始结点 
+	while (nowFrontP->next->next != endP) { 				//如果当前结点的下一个结点是 已排序部分，就退出循环，排序完成 
+		struct student *p1 = nowFrontP;						//每一趟都是从头开始 
+		while (p1->next->next != endP) { 					//每一趟的排序都是 
+
+			if (p1->next->score < p1->next->next->score) {
+				swap(p1);
+			}
+			p1 = p1->next;
+		}
+		endP = p1->next;
+	}
+}
+//按照姓名排序
+sort_name(struct student*head)
+{
+	if (head == NULL) {
+		printf("数据为空，不支持排序\n");
+		return;
+	}
+	struct student *p = head;
+	struct student *nowFrontP = head;							//当前front结点 ,表示当前待比较的两个结点之前结点，之所以保存这个，是为了比较方便 
+	struct student *endP = NULL;								//已排好序部分的开始结点 
+	while (nowFrontP->next->next != endP)                       //如果当前结点的下一个结点是 已排序部分，就退出循环，排序完成 
+	{
+		struct student *p1 = nowFrontP;							//每一趟都是从头开始 
+		while (p1->next->next != endP)                          //每一趟的排序都是 
+		{
+			if (strcmp(p1->next->cname, p1->next->next->cname)>0)
+			{
+				swap(p1);
+			}
+			p1 = p1->next;
+		}
+		endP = p1->next;
+	}
+}
+//学生计数
+others(void)
+{
+	int i;
+	printf("    *                       *                     *                          \n");
+	printf("                       *                                *\n");
+	for (i = 0; i<3; i++)
+		printf("                                                                                            *\n");
+	printf("                                     *\n");
+	printf("              *                                                          *\n");
+	for (i = 0; i<5; i++)
+		printf("                       *                               *                                 *                       *\n");
+	printf("\n");
+	printf("						***********************\n");
+	printf("						***********************\n");
+	printf("						***                 ***\n");
+	printf("						 ***     共%d人    ***\n", icount);
+	printf("						***                 ***\n");
+	printf("						***********************\n");
+	printf("						***********************\n");
+	printf("    *                       *                     *                          \n");
+	printf("                         *                                *\n");
+	for (i = 0; i<5; i++)
+		printf("                                                                                            *             *\n");
+	printf("                                     *\n");
+	printf("      *                                                          *\n");
+	for (i = 0; i<3; i++)
+		printf("                       *                                                                *         *\n");
+}
+
+//用户注册信息查重
+/*user_look(struct user*pphead)
+{
+	struct user *ptemp;
+	ptemp = pphead->next;
+	while (1)
+	{
+		while (ptemp&&strcmp(ptemp->num, pnew->num) != 0)
+		{
+			ptemp = ptemp->next;
+		}
+		if (ptemp == NULL)
+		{
+			break;
+		}
+		printf("该账号已经被注册过!\n");
+		printf("学号（账号）:");
+		struct user *pnew, *s;
+		s = pphead;
+		ptemp = pphead->next;
+		pnew = (struct user*)malloc(sizeof(struct user));
+		scanf("%s", pnew->num);
+	}
+	return pphead;
+}*/
+//管理员登陆
+password()
+{
+	char pass[7] = { "123456" };
+	char n[7] = "0";
+	char c;
+	int i;
+	for (i = 0; i < 3; i++)
+	{
+		int j = 0;
+		printf("\n");
+		printf("					*****|请输入密码|*****");
+		printf("														");
+		while ((c = getch()) != '\r')
+		{
+			n[j] = c;
+			printf("*");
+			j++;
+			if (c == '\b')
+			{
+				printf("\b");
+				printf(" ");
+				printf("\b\b");
+				printf(" ");
+				printf("\b");
+				j = j - 2;
+			}
+		}
+		printf("\n");
+		if (0 == strcmp(pass, n))
+		{
+			printf("					*****|登陆★成功|*****\n");
+			printf("\n");
+			printf("				    ******| 按下 Enter 进入 |*****\n");
+			getchar();
+			return pass;
+			system("cls");
+		}
+		else
+		{
+			if (i == 2)
+			{
+				printf("		  ★★★★★★|您已连续输入三次错误的密码，将被强制退出|★★★★★★\n");
+				exit(1);
+			}
+			printf("					-----|密码错误！|-----\n");
+		}
+	}
+	getchar();
+}
+
+//时间显示
+other(void)
+{
+	int i, n = 43;
+	for (i = 0; i<n; i++)
+		printf(" ");
+	system("date /T");
+	return 0;
+}
+//主函数
+int main(void)
+{
+	system("color 06");
+	int shuzi, number;
+	char IIdex[10], ID[10], iindex[10], id[20],index[20];
+	struct student *phead;
+	phead = (struct user*)malloc(sizeof(struct user));
+	phead->next = NULL;
+	phead = student_creat();
+	f_read(phead);
+	struct student *pphead;
+	pphead = (struct user*)malloc(sizeof(struct user));
+	pphead->next = NULL;
+	other();													//时间显示
+	pphead = CREAT();
+	user_f_read(pphead);
+	choose(phead,pphead);										//主界面选择
+	return 0;
+}
